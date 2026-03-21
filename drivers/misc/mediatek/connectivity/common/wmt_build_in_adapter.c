@@ -35,6 +35,7 @@
  * Connsys adaptation layer logging utility
  ******************************************************************************/
 static unsigned int gConnAdpDbgLvl = CONNADP_LOG_INFO;
+(void)gConnAdpDbgLvl;
 
 #define CFG_DISABLE_CONNADP_LOG	1
 
