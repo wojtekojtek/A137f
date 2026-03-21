@@ -23,6 +23,7 @@ ccflags-y += -Wno-unused-value
 ccflags-y += -Wno-unused-result
 ccflags-y += -Wno-format
 ccflags-y += -Wno-parentheses
+ccflags-y += -Wno-declaration-after-statement
 
 ifeq ($(os), none)
 ccflags-y += -I/usr/include/
