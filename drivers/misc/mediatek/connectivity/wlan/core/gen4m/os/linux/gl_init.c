@@ -5908,6 +5908,11 @@ static int32_t wlanProbe(void *pvData, void *pvDriverData)
 			break;
 		}
 #endif
+		pr_err("WIFI_DBG: entering wlanAdapterStart\n");
+		if (wlanAdapterStart(prAdapter,
+					prRegInfo, FALSE) != WLAN_STATUS_SUCCESS)
+			i4Status = -EIO;
+		pr_err("WIFI_DBG: wlanAdapterStart returned i4Status=%d\n", i4Status);
 
 		if (wlanAdapterStart(prAdapter,
 				     prRegInfo, FALSE) != WLAN_STATUS_SUCCESS)
