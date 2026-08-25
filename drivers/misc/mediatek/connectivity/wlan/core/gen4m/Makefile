@@ -8,7 +8,7 @@ $(warning TARGET_PRODUCT is empty! using default option.)
 endif
 
 # disable logs!
-ccflags-y += -DDBG_DISABLE_ALL_LOG=1
+# ccflags-y += -DDBG_DISABLE_ALL_LOG=1
 
 # ---------------------------------------------------
 # OS option
