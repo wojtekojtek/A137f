@@ -5848,10 +5848,12 @@ static int32_t wlanProbe(void *pvData, void *pvDriverData)
 
 		DBGLOG(INIT, INFO, "enter wlanProbe\n");
 
-		bRet = glBusInit(pvData);
+			pr_err("WIFI_DBG: calling glBusInit\n");
+			bRet = glBusInit(pvData);
+			pr_err("WIFI_DBG: glBusInit returned bRet=%d\n", bRet);
 
 #if (CFG_SUPPORT_TRACE_TC4 == 1)
-		wlanDebugTC4Init();
+			wlanDebugTC4Init();
 #endif
 
 #if (CFG_SUPPORT_STATISTICS == 1)
@@ -5859,6 +5861,7 @@ static int32_t wlanProbe(void *pvData, void *pvDriverData)
 #endif
 		/* Cannot get IO address from interface */
 		if (bRet == FALSE) {
+			pr_err("WIFI_DBG: glBusInit FAILED\n");
 			DBGLOG(INIT, ERROR, "wlanProbe: glBusInit() fail\n");
 			i4Status = -EIO;
 			eFailReason = BUS_INIT_FAIL;
@@ -5867,14 +5870,17 @@ static int32_t wlanProbe(void *pvData, void *pvDriverData)
 		/* 4 <2> Create network device, Adapter, KalInfo,
 		 *       prDevHandler(netdev)
 		 */
-		prWdev = wlanNetCreate(pvData, pvDriverData);
-		if (prWdev == NULL) {
-			DBGLOG(INIT, ERROR,
-			       "wlanProbe: No memory for dev and its private\n");
-			i4Status = -ENOMEM;
-			eFailReason = NET_CREATE_FAIL;
-			break;
-		}
+			pr_err("WIFI_DBG: calling wlanNetCreate\n");
+			prWdev = wlanNetCreate(pvData, pvDriverData);
+			pr_err("WIFI_DBG: wlanNetCreate returned prWdev=%p\n", prWdev);
+			if (prWdev == NULL) {
+				pr_err("WIFI_DBG: wlanNetCreate FAILED\n");
+				DBGLOG(INIT, ERROR,
+				       "wlanProbe: No memory for dev and its private\n");
+				i4Status = -ENOMEM;
+				eFailReason = NET_CREATE_FAIL;
+				break;
+			}
 		/* 4 <2.5> Set the ioaddr to HIF Info */
 		WIPHY_PRIV(prWdev->wiphy, prGlueInfo);
 		gPrDev = prGlueInfo->prDevHandler;
@@ -5882,9 +5888,12 @@ static int32_t wlanProbe(void *pvData, void *pvDriverData)
 		/* 4 <4> Setup IRQ */
 		prWlandevInfo = &arWlanDevInfo[i4DevIdx];
 
+		pr_err("WIFI_DBG: calling glBusSetIrq\n");
 		i4Status = glBusSetIrq(prWdev->netdev, NULL, prGlueInfo);
+		pr_err("WIFI_DBG: glBusSetIrq returned i4Status=%d\n", i4Status);
 
 		if (i4Status != WLAN_STATUS_SUCCESS) {
+			pr_err("WIFI_DBG: glBusSetIrq FAILED\n");
 			DBGLOG(INIT, ERROR, "wlanProbe: Set IRQ error\n");
 			eFailReason = BUS_SET_IRQ_FAIL;
 			break;
@@ -5913,10 +5922,6 @@ static int32_t wlanProbe(void *pvData, void *pvDriverData)
 					prRegInfo, FALSE) != WLAN_STATUS_SUCCESS)
 			i4Status = -EIO;
 		pr_err("WIFI_DBG: wlanAdapterStart returned i4Status=%d\n", i4Status);
-
-		if (wlanAdapterStart(prAdapter,
-				     prRegInfo, FALSE) != WLAN_STATUS_SUCCESS)
-			i4Status = -EIO;
 
 		wlanOnPostAdapterStart(prAdapter, prGlueInfo);
 
